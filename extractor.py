@@ -1,6 +1,7 @@
-import xlsxwriter
+import xlsxwriter 
 import re
 
+#xlsxwriter
 # workbook = xlsxwriter.Workbook('gcmsgs.xlsx')
 
 def allgchistory(sk, gcid):
@@ -22,11 +23,11 @@ def allgchistory(sk, gcid):
         if re.findall('19', x):
             ch = sk.chats.chat(x)
             
-            cleanString = re.sub('\W+', ' ', gcid[x].topic) #remove special characters
-            msg(cleanString)
-            worksheet = workbook.add_worksheet(cleanString)
+            sheetname = cleanstring(gcid[x].topic) #remove special characters
+            msg(sheetname)
+            worksheet = workbook.add_worksheet(sheetname)
 
-            getMsgs(ch ,sk, worksheet, history)            
+            getMsgs(ch, sk, worksheet, history)            
 
     workbook.close()
 
@@ -43,10 +44,11 @@ def singlegchistory(sk, gcid, id):
     
     ch = sk.chats.chat(id)    
     history = True    
-    sheetname = gcid[id.strip()].topic
-    cleanString = re.sub('\W+', ' ', sheetname) 
-    worksheet = workbook.add_worksheet(cleanString)
-    msg(cleanString)
+    sheetname = cleanstring(gcid[id.strip()].topic)       
+       
+    worksheet = workbook.add_worksheet(sheetname)
+
+    msg(sheetname)
     
     getMsgs(ch,sk, worksheet, history)               
 
@@ -67,7 +69,7 @@ def getMsgs(ch,sk, worksheet, history):
     col = 0
     row = 0
     outer = False    
-    
+    msglist = []
     while history:
         
         gcmsgs = ch.getMsgs()
@@ -84,23 +86,34 @@ def getMsgs(ch,sk, worksheet, history):
 
             else:
                 if sk.contacts[ms.userId]:
-                    worksheet.write(row, col, str(ms.time))
-                    worksheet.write(row, col + 1, sk.contacts[ms.userId].name.first)
-                    worksheet.write(row, col + 2, removeHtmlTag(ms.content))
-                    row += 1                                           
+                    msglist.append(ms)
+                                                                                
                     
         if outer:   
             spin.stop()        
-            break            
+            break
+
+    msglist.reverse()                                
+    for ms in msglist:    
+        worksheet.write(row, col, str(ms.time))
+        worksheet.write(row, col + 1, sk.contacts[ms.userId].name.first)
+        worksheet.write(row, col + 2, removeHtmlTag(ms.content))
+        row += 1  
+
+
 
 
 def msg(cleanString):    
-    print(f"Extracting: {cleanString} Chat History...")
+    print(f"Extracting: {cleanString} Chat History...")    
+
+
+def cleanstring(strval):
+    cleanString = re.sub('\W+', ' ', strval) 
+    if len(cleanString) > 30:
+        cleanString = cleanString[:30]
     
-
-
-
-
+    content = cleanString.encode('utf-8').decode('utf8')
+    return content
 
 
 # col = 0

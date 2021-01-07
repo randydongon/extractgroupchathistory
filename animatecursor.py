@@ -16,10 +16,9 @@ class CursorAnimation(threading.Thread):
             sys.stdout.write(self.animation_char[self.idx % len(self.animation_char)])
             sys.stdout.flush()
             time.sleep(0.1)
-            sys.stdout.write('\b')
-            # print(self.animation_char[self.idx % len(self.animation_char)] + "\b")
+            sys.stdout.write('\b')            
             self.idx += 1
-            # time.sleep(0.1)
+            
 
     def stop(self):
         self.flag = False

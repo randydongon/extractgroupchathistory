@@ -5,7 +5,7 @@ from extractor import allgchistory, singlegchistory
 import re
 
 def main():
-    sk = Skype(input("Enter Email add: "), getpass())
+    sk = Skype('katranjikamote@gmail.com', getpass())
     sentinel = input("Press 1 to proceed, 0 to exit: ")
     
     if sk.conn.connected:
@@ -19,8 +19,8 @@ def main():
                 singlegchistory(sk, gcid, param)
                 del gcid[param]
             elif not param:
-                allgchistory(sk, gcid)
-        # print(sk.conn)
+                allgchistory(sk, gcid)  
+                      
             
             sentinel = input("Press 1 to continue, 0 to exit: ")
 
