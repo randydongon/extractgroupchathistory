@@ -1,12 +1,12 @@
 import xlsxwriter 
 import re
-
+from uploadtogdrive import uploadfile
 #xlsxwriter
 # workbook = xlsxwriter.Workbook('gcmsgs.xlsx')
 
 def allgchistory(sk, gcid):
-    
-    workbook = getworkbook() #workbook
+    filename = getfilename()
+    workbook = getworkbook(filename) # workbook    
     
     ln = len(gcid)
     history = True
@@ -30,6 +30,8 @@ def allgchistory(sk, gcid):
             getMsgs(ch, sk, worksheet, history)            
 
     workbook.close()
+    uploadfile('./docs/', filename+'.xlsx')
+
 
 
 def removeHtmlTag(raw_txt):
@@ -39,9 +41,8 @@ def removeHtmlTag(raw_txt):
 
 
 def singlegchistory(sk, gcid, id):
-    
-    workbook = getworkbook() #generate workbook
-    
+    filename = getfilename()
+    workbook = getworkbook(filename) #generate workbook    
     ch = sk.chats.chat(id)    
     history = True    
     sheetname = cleanstring(gcid[id.strip()].topic)       
@@ -51,13 +52,15 @@ def singlegchistory(sk, gcid, id):
     msg(sheetname)
     
     getMsgs(ch,sk, worksheet, history)               
+    
+    workbook.close()   
+    uploadfile('./docs/', filename+'.xlsx')    
 
-    workbook.close()
 
-
-def getworkbook():
-    filename = input("Enter File name: ")
-    workbook = xlsxwriter.Workbook(filename + '.xlsx')
+def getworkbook(filename):
+    doc = './docs/'
+    
+    workbook = xlsxwriter.Workbook(doc + filename + '.xlsx')
     return workbook
 
 
@@ -116,28 +119,6 @@ def cleanstring(strval):
     return content
 
 
-# col = 0
-            # row = 0
-
-            # while history:
-
-            #     gcmsgs = ch.getMsgs()
-
-            #     for ms in gcmsgs:
-
-            #         if re.findall('HistoryDisclosedUpdate', ms.type): # 
-            #             print(ms.type)
-            #             print(ms.history)
-            #             # history = False
-            #             outer = ms.history
-            #             break
-
-            #         else:
-            #             if sk.contacts[ms.userId]:
-            #                 worksheet.write(row, col, str(ms.time))
-            #                 worksheet.write(row, col + 1, sk.contacts[ms.userId].name.first)
-            #                 worksheet.write(row, col + 2, removeHtmlTag(ms.content))
-            #                 row += 1
-            #     if outer:
-            #         break
-
+def getfilename():
+    filename = input("Enter File name: ")
+    return filename
